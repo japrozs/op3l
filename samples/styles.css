@@ -1,0 +1,11 @@
+html, body, *{
+	padding : 0px;
+	margin : 0px;
+}
+
+*{
+	padding: 10px;
+	color : hotpink;
+	font-family : "Monaco" !important;
+	font-size : 30px;
+}
