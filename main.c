@@ -39,7 +39,9 @@ int main(int argc, const char** argv)
             die("could not read request headers");
         }
 
+#ifdef OUTPUT_VERBOSE
         printf("Headers: \"%s\"\n", headers);
+#endif
 
         // size_t content_length = get_content_length(headers);
         // char* body = read_body(client_socket, content_length);
@@ -51,7 +53,9 @@ int main(int argc, const char** argv)
         // printf("body len – %zu\n", content_length);
 
         const char* route = get_route_accessed(headers);
+#ifdef OUTPUT_VERBOSE
         printf("route accessed – \"%s\"\n", route);
+#endif
 
         if (strstr(route, ".") != NULL || strcmp(route, "/") == 0) {
             // static file requested or index route

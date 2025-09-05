@@ -50,4 +50,56 @@ void serve_static_file(int client_socket, const char* route);
 // dynamic.c
 void serve_dynamic_op3l_file(int client_socket, const char* route);
 
+// OP3L FILE PARSER/INTERPRETER STUFF
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+typedef enum {
+    OP_CONSTANT,
+    OP_CONSTANT_LONG, // 24 bit wide
+    OP_RETURN
+} opcode;
+
+typedef double OP3L_VALUE;
+
+struct value_array {
+    int capacity;
+    int count;
+    OP3L_VALUE* values;
+};
+
+struct chunk {
+    int count;
+    int capacity;
+    uint8_t* code;
+    int* lines;
+    struct value_array constants;
+};
+
+void init_chunk(struct chunk* chunk);
+void free_chunk(struct chunk* chunk);
+void write_chunk(struct chunk* chunk, uint8_t byte, int line);
+int add_constant(struct chunk* chunk, OP3L_VALUE value);
+void write_constant(struct chunk* chunk, OP3L_VALUE value, int line);
+void* reallocate(void* pointer, size_t old_size, size_t new_size);
+
+#define GROW_CAPACITY(capacity) \
+    ((capacity) < 8 ? 8 : (capacity) * 2)
+
+#define GROW_ARRAY(type, pointer, old_count, new_count)    \
+    (type*)reallocate(pointer, sizeof(type) * (old_count), \
+        sizeof(type) * (new_count))
+
+#define FREE_ARRAY(type, pointer, oldCount) \
+    reallocate(pointer, sizeof(type) * (oldCount), 0)
+
+void disassemble_chunk(struct chunk* chunk, const char* name);
+int disassemble_instr(struct chunk* chunk, int offset);
+
+void print_value(OP3L_VALUE value);
+void init_value_array(struct value_array* array);
+void write_value_array(struct value_array* array, OP3L_VALUE value);
+void free_value_array(struct value_array* array);
+
 #endif
