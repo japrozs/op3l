@@ -47,4 +47,7 @@ char* read_body(int socket, size_t content_length);
 // static.c
 void serve_static_file(int client_socket, const char* route);
 
+// dynamic.c
+void serve_dynamic_op3l_file(int client_socket, const char* route);
+
 #endif

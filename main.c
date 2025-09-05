@@ -58,13 +58,7 @@ int main(int argc, const char** argv)
             serve_static_file(client_socket, route);
         } else {
             // possibly a dynamic route, we shall deal with that later
-            char res[1 << 17];
-            sprintf(res,
-                "HTTP/1.1 200 OK\n" OP3L_SERVER_HEADER
-                "Content-Type: text/plain\n"
-                "\n"
-                "<h1>Hello World</h1>");
-            write(client_socket, res, strlen(res));
+            serve_dynamic_op3l_file(client_socket, route);
         }
 
         close(client_socket); // HTTP/1.1 would normally keep alive
