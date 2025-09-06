@@ -38,3 +38,21 @@ bool endswith(const char* str, char* suffix)
 
     return strcmp(str + lenstr - lensuffix, suffix) == 0;
 }
+
+int isnum(const char* str)
+{
+    if (*str == '\0')
+        return 0;
+    if (*str == '+' || *str == '-') {
+        str++;
+        if (*str == '\0')
+            return 0;
+    }
+    while (*str) {
+        if (!isdigit((unsigned char)*str)) {
+            return 0;
+        }
+        str++;
+    }
+    return 1;
+}

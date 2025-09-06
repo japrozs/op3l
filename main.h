@@ -32,6 +32,7 @@
 void die(char* fmt, ...);
 void print(char* fmt, ...);
 bool endswith(const char* str, char* suffix);
+int isnum(const char* str);
 
 // server.c
 int check(int exp, const char* msg);
@@ -54,6 +55,8 @@ void serve_dynamic_op3l_file(int client_socket, const char* route);
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+void interpret_file(const char* file_path);
 
 typedef enum {
     OP_CONSTANT,
@@ -101,5 +104,20 @@ void print_value(OP3L_VALUE value);
 void init_value_array(struct value_array* array);
 void write_value_array(struct value_array* array, OP3L_VALUE value);
 void free_value_array(struct value_array* array);
+
+struct vm {
+    struct chunk* chunk;
+    uint8_t* ip;
+};
+
+enum interpret_result {
+    INTERPRET_OK,
+    INTERPRET_COMPILE_ERROR,
+    INTERPRET_RUNTIME_ERROR
+};
+
+void init_vm();
+void free_vm();
+enum interpret_result interpret(struct chunk* chunk);
 
 #endif
