@@ -56,11 +56,18 @@ void serve_dynamic_op3l_file(int client_socket, const char* route);
 #include <stddef.h>
 #include <stdint.h>
 
+#define STACK_MAX 256
+
 void interpret_file(const char* file_path);
 
 typedef enum {
     OP_CONSTANT,
     OP_CONSTANT_LONG, // 24 bit wide
+    OP_NEGATE,
+    OP_ADD,
+    OP_SUBTRACT,
+    OP_MULTIPLY,
+    OP_DIVIDE,
     OP_RETURN
 } opcode;
 
@@ -108,6 +115,8 @@ void free_value_array(struct value_array* array);
 struct vm {
     struct chunk* chunk;
     uint8_t* ip;
+    OP3L_VALUE stack[STACK_MAX];
+    OP3L_VALUE* stack_top;
 };
 
 enum interpret_result {
@@ -116,8 +125,10 @@ enum interpret_result {
     INTERPRET_RUNTIME_ERROR
 };
 
-void init_vm();
-void free_vm();
+void init_vm(void);
+void free_vm(void);
 enum interpret_result interpret(struct chunk* chunk);
+void push(OP3L_VALUE value);
+OP3L_VALUE pop();
 
 #endif
