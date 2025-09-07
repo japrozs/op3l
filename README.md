@@ -9,4 +9,6 @@ to buld the project, run the following commands
 chmod +x make.sh
 ./make.sh
 ./out/op3l 4000 # run the server on port 4000
+# OR
+./out/op3l samples/main.op3l # run the op3l interpreter (experimental)
 ```
