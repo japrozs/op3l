@@ -1,13 +1,13 @@
 #include "main.h"
 
-void init_value_array(struct value_array* array)
+void init_value_array(struct value_array_t* array)
 {
     array->values = NULL;
     array->capacity = 0;
     array->count = 0;
 }
 
-void write_value_array(struct value_array* array, OP3L_VALUE value)
+void write_value_array(struct value_array_t* array, OP3L_VALUE value)
 {
     if (array->capacity < array->count + 1) {
         int old_capacity = array->capacity;
@@ -20,7 +20,7 @@ void write_value_array(struct value_array* array, OP3L_VALUE value)
     array->count++;
 }
 
-void free_value_array(struct value_array* array)
+void free_value_array(struct value_array_t* array)
 {
     FREE_ARRAY(OP3L_VALUE, array->values, array->capacity);
     init_value_array(array);

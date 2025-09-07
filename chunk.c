@@ -1,6 +1,6 @@
 #include "main.h"
 
-void init_chunk(struct chunk* chunk)
+void init_chunk(struct chunk_t* chunk)
 {
     chunk->count = 0;
     chunk->capacity = 0;
@@ -9,7 +9,7 @@ void init_chunk(struct chunk* chunk)
     init_value_array(&chunk->constants);
 }
 
-void write_chunk(struct chunk* chunk, uint8_t byte, int line)
+void write_chunk(struct chunk_t* chunk, uint8_t byte, int line)
 {
     if (chunk->capacity < chunk->count + 1) {
         int old_capacity = chunk->capacity;
@@ -38,7 +38,7 @@ void* reallocate(void* pointer, [[maybe_unused]] size_t old_size, size_t new_siz
     return result;
 }
 
-void free_chunk(struct chunk* chunk)
+void free_chunk(struct chunk_t* chunk)
 {
     FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
     FREE_ARRAY(int, chunk->lines, chunk->capacity);
@@ -46,13 +46,13 @@ void free_chunk(struct chunk* chunk)
     init_chunk(chunk);
 }
 
-int add_constant(struct chunk* chunk, OP3L_VALUE value)
+int add_constant(struct chunk_t* chunk, OP3L_VALUE value)
 {
     write_value_array(&chunk->constants, value);
     return chunk->constants.count - 1;
 }
 
-void write_constant(struct chunk* chunk, OP3L_VALUE value, int line)
+void write_constant(struct chunk_t* chunk, OP3L_VALUE value, int line)
 {
     int index = add_constant(chunk, value);
     if (index < 256) {

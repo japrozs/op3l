@@ -56,3 +56,29 @@ int isnum(const char* str)
     }
     return 1;
 }
+
+char* read_file(const char* path)
+{
+    FILE* file = fopen(path, "rb");
+
+    if (file == NULL) {
+        die("Could not open file \"%s\"", path);
+    }
+
+    fseek(file, 0L, SEEK_END);
+    size_t file_size = ftell(file);
+    rewind(file);
+
+    char* buffer = (char*)malloc(file_size + 1);
+    if (buffer == NULL) {
+        die("Not enough memory to read \"%s\"", path);
+    }
+    size_t bytesRead = fread(buffer, sizeof(char), file_size, file);
+    if (bytesRead < file_size) {
+        die("Could not read file \"%s\"", path);
+    }
+    buffer[bytesRead] = '\0';
+
+    fclose(file);
+    return buffer;
+}

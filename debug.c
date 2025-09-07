@@ -1,6 +1,6 @@
 #include "main.h"
 
-void disassemble_chunk(struct chunk* chunk, const char* name)
+void disassemble_chunk(struct chunk_t* chunk, const char* name)
 {
     printf("== %s ==\n", name);
 
@@ -15,7 +15,7 @@ static int simple_instr(const char* name, int offset)
     return offset + 1;
 }
 
-static int constant_instr(const char* name, struct chunk* chunk, int offset)
+static int constant_instr(const char* name, struct chunk_t* chunk, int offset)
 {
     uint8_t constant = chunk->code[offset + 1];
     printf("%-16s %6u '", name, constant);
@@ -24,7 +24,7 @@ static int constant_instr(const char* name, struct chunk* chunk, int offset)
     return offset + 2;
 }
 
-static int constant_long_instr(const char* name, struct chunk* chunk, int offset)
+static int constant_long_instr(const char* name, struct chunk_t* chunk, int offset)
 {
     uint8_t low = chunk->code[offset + 1];
     uint8_t mid = chunk->code[offset + 2];
@@ -38,7 +38,7 @@ static int constant_long_instr(const char* name, struct chunk* chunk, int offset
     return offset + 4;
 }
 
-int disassemble_instr(struct chunk* chunk, int offset)
+int disassemble_instr(struct chunk_t* chunk, int offset)
 {
     printf("%04d ", offset);
 

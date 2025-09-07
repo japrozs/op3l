@@ -33,6 +33,7 @@ void die(char* fmt, ...);
 void print(char* fmt, ...);
 bool endswith(const char* str, char* suffix);
 int isnum(const char* str);
+char* read_file(const char* path);
 
 // server.c
 int check(int exp, const char* msg);
@@ -73,25 +74,25 @@ typedef enum {
 
 typedef double OP3L_VALUE;
 
-struct value_array {
+struct value_array_t {
     int capacity;
     int count;
     OP3L_VALUE* values;
 };
 
-struct chunk {
+struct chunk_t {
     int count;
     int capacity;
     uint8_t* code;
     int* lines;
-    struct value_array constants;
+    struct value_array_t constants;
 };
 
-void init_chunk(struct chunk* chunk);
-void free_chunk(struct chunk* chunk);
-void write_chunk(struct chunk* chunk, uint8_t byte, int line);
-int add_constant(struct chunk* chunk, OP3L_VALUE value);
-void write_constant(struct chunk* chunk, OP3L_VALUE value, int line);
+void init_chunk(struct chunk_t* chunk);
+void free_chunk(struct chunk_t* chunk);
+void write_chunk(struct chunk_t* chunk, uint8_t byte, int line);
+int add_constant(struct chunk_t* chunk, OP3L_VALUE value);
+void write_constant(struct chunk_t* chunk, OP3L_VALUE value, int line);
 void* reallocate(void* pointer, size_t old_size, size_t new_size);
 
 #define GROW_CAPACITY(capacity) \
@@ -104,16 +105,16 @@ void* reallocate(void* pointer, size_t old_size, size_t new_size);
 #define FREE_ARRAY(type, pointer, oldCount) \
     reallocate(pointer, sizeof(type) * (oldCount), 0)
 
-void disassemble_chunk(struct chunk* chunk, const char* name);
-int disassemble_instr(struct chunk* chunk, int offset);
+void disassemble_chunk(struct chunk_t* chunk, const char* name);
+int disassemble_instr(struct chunk_t* chunk, int offset);
 
 void print_value(OP3L_VALUE value);
-void init_value_array(struct value_array* array);
-void write_value_array(struct value_array* array, OP3L_VALUE value);
-void free_value_array(struct value_array* array);
+void init_value_array(struct value_array_t* array);
+void write_value_array(struct value_array_t* array, OP3L_VALUE value);
+void free_value_array(struct value_array_t* array);
 
 struct vm {
-    struct chunk* chunk;
+    struct chunk_t* chunk;
     uint8_t* ip;
     OP3L_VALUE stack[STACK_MAX];
     OP3L_VALUE* stack_top;
@@ -125,10 +126,76 @@ enum interpret_result {
     INTERPRET_RUNTIME_ERROR
 };
 
+enum token_type {
+    // Single-character tokens.
+    TOKEN_LEFT_PAREN,
+    TOKEN_RIGHT_PAREN,
+    TOKEN_LEFT_BRACE,
+    TOKEN_RIGHT_BRACE,
+    TOKEN_COMMA,
+    TOKEN_DOT,
+    TOKEN_MINUS,
+    TOKEN_PLUS,
+    TOKEN_SEMICOLON,
+    TOKEN_SLASH,
+    TOKEN_STAR,
+    // One or two character tokens.
+    TOKEN_BANG,
+    TOKEN_BANG_EQUAL,
+    TOKEN_EQUAL,
+    TOKEN_EQUAL_EQUAL,
+    TOKEN_GREATER,
+    TOKEN_GREATER_EQUAL,
+    TOKEN_LESS,
+    TOKEN_LESS_EQUAL,
+    // Literals.
+    TOKEN_IDENTIFIER,
+    TOKEN_STRING,
+    TOKEN_NUMBER,
+    // Keywords.
+    TOKEN_AND,
+    TOKEN_CLASS,
+    TOKEN_ELSE,
+    TOKEN_FALSE,
+    TOKEN_FOR,
+    TOKEN_FN,
+    TOKEN_IF,
+    TOKEN_NIL,
+    TOKEN_OR,
+    TOKEN_PRINT,
+    TOKEN_RETURN,
+    TOKEN_SUPER,
+    TOKEN_THIS,
+    TOKEN_TRUE,
+    TOKEN_VAR,
+    TOKEN_WHILE,
+
+    TOKEN_ERROR,
+    TOKEN_EOF
+};
+
 void init_vm(void);
 void free_vm(void);
-enum interpret_result interpret(struct chunk* chunk);
+enum interpret_result interpret(const char* source);
 void push(OP3L_VALUE value);
 OP3L_VALUE pop();
+
+void compile(const char* source);
+
+struct scanner_t {
+    const char* start;
+    const char* current;
+    int line;
+};
+
+struct token_t {
+    enum token_type type;
+    const char* start;
+    int length;
+    int line;
+};
+
+void init_scanner(const char* source);
+struct token_t scan_token();
 
 #endif

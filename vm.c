@@ -104,9 +104,8 @@ static enum interpret_result run()
 #undef BINARY_OP
 }
 
-enum interpret_result interpret(struct chunk* chunk)
+enum interpret_result interpret(const char* source)
 {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+    compile(source);
+    return INTERPRET_OK;
 }
